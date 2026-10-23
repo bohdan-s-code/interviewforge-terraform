@@ -1,0 +1,8 @@
+.claude/worktrees/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+.env
+node_modules/
+app/dist/
