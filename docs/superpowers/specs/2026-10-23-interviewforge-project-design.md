@@ -10,15 +10,15 @@ This document fixes the cross-cutting decisions for the whole learning project a
 
 ## 1. Decisions
 
-| Topic | Decision | Reason |
+Reasons and rejected options live in the linked ADRs. Phase-specific decisions (module boundaries, secrets handling, state layout, policy tooling) get their own ADRs when their phase starts.
+
+| Topic | Decision | ADR |
 |---|---|---|
-| Cloud | AWS, **fully emulated**. No real AWS account is used. | Zero cost and zero risk. |
-| Emulator | **MiniStack** (MIT, `ministackorg/ministack`) in Docker on `localhost:4566`, with `PERSIST_STATE=1`. Fallbacks in order: Floci (MIT), LocalStack Hobby. | No account or token; free multi-account and persistence. LocalStack Community was retired in March 2026; its free Hobby plan needs an auth token, is non-commercial only, has no persistence and cannot start on fork PRs. |
-| IaC tool | Terraform **1.17.0**, pinned in `mise.toml`. | Write-only attributes need ≥ 1.11, ephemeral resources ≥ 1.10, `use_lockfile` GA in 1.11. |
-| Providers | `hashicorp/aws ~> 6.0`, `hashicorp/random ~> 3.7`, `kreuzwerker/docker ~> 4.0`, plus `local`, `archive`, `http`. | `secret_string_wo` needs aws ≥ 5.88; ephemeral `random_password` needs random ≥ 3.7. |
-| App | Node.js + TypeScript, Hono framework, bundled with esbuild. Lambda runtime `nodejs22.x`. | Hono runs as a Node server (Phases 1–4) and as a Lambda handler (end of Phase 4) with the same code. |
-| Repo / CI | Public GitHub repo, GitHub Actions. | Free minutes and free Environment protection rules on public repos. Data is synthetic. |
-| Code evolution | One evolving codebase, git tag per phase (`phase-N-done`). | Phase 2 refactors code that Phase 1 really applied, so `moved`, import and state lessons are real. |
+| Cloud and emulator | AWS, **fully emulated** on **MiniStack** (`localhost:4566`, `PERSIST_STATE=1`). Fallbacks: Floci, then LocalStack Hobby. | [ADR-0001](../../adr/0001-emulated-aws-on-ministack.md) (Proposed until Phase 0) |
+| IaC tool and providers | Terraform **1.17.0** in `mise.toml`; `aws ~> 6.0`, `random ~> 3.7`, `docker ~> 4.0`, plus `local`, `archive`, `http`. | [ADR-0002](../../adr/0002-terraform-and-version-pins.md) |
+| App | Node.js + TypeScript, Hono on Node server and Lambda (`nodejs22.x`), bundled with esbuild. | [ADR-0003](../../adr/0003-typescript-hono-dual-runtime.md) |
+| Code evolution | One evolving codebase, git tag per phase (`phase-N-done`). | [ADR-0004](../../adr/0004-single-evolving-codebase.md) |
+| Repo and CI | Public GitHub repo; GitHub Actions runs an ephemeral plan → apply → smoke → destroy per PR. | [ADR-0005](../../adr/0005-ephemeral-ci-integration.md) |
 
 ## 2. How the learner works
 
